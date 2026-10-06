@@ -1,0 +1,12 @@
+// Ozone 3.26: observe watchdog resets in the already programmed target.
+// Close other debuggers and reconnect DAPLink USB before opening this project.
+void OnProjectLoad(void) {
+  Project.SetDevice("STM32F103C6");
+  Project.SetHostIF("USB", "1047408020");
+  Project.SetTargetIF("SWD");
+  Project.SetTIFSpeed("100 kHz");
+  Debug.SetConnectMode(CM_ATTACH);
+  Project.SetConsoleLogFile("$(ProjectDir)/first-task-ozone-326-watchdog.log");
+  Project.SetJLinkLogFile("$(ProjectDir)/first-task-jlink-326-watchdog.log");
+  File.Open("$(ProjectDir)/../build/first-task.elf");
+}

@@ -1,0 +1,7 @@
+void OnProjectLoad (void) {
+  Project.SetDevice ("STM32F103C6");
+  Project.SetHostIF ("GDB_Server", "127.0.0.1:3333");
+  Project.SetTargetIF ("SWD");
+  Project.SetTIFSpeed ("1 MHz");
+  File.Open ("$(ProjectDir)/../firmware/first-task-timer.elf");
+}

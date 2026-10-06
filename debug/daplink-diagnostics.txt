@@ -1,0 +1,34 @@
+STM32F103C6 / DAPLink diagnostics, 2026-10-06
+
+Read through the user's running OpenOCD TCL server at 127.0.0.1:6666.
+No firmware erase, download, or option-byte write was performed.
+
+FLASH_OBR (0x4002201C):  0x03FFFFFC
+FLASH_WRPR (0x40022020): 0xFFFFFFFF (no write-protected pages)
+Raw option bytes at 0x1FFFF800:
+  5AA5 00FF 00FF 00FF 00FF 00FF 00FF 00FF
+RDP byte: 0xA5 (read protection disabled on STM32F1)
+
+tick symbol in first-task-timer.elf: 0x20000080
+First sample:  0x0001CC0C
+Second sample after a one-second host delay: 0x0001CFFC
+Delta: 1008 ticks; host delay and read overhead are included.
+
+RCC_CSR (0x40021024): 0x1C000003
+IWDGRSTF (bit 29) was clear in the sampled reset flags.
+
+DBGMCU_CR (0xE0042004): 0x00000307
+OpenOCD's stm32f1x.cfg sets DBG_IWDG_STOP and DBG_WWDG_STOP.
+CPU was halted for three seconds: tick stayed at 0x0003DDB4,
+RCC_CSR remained 0x1C000003, then CPU was resumed.
+
+Conclusion: read/write protection is disabled; timer firmware runs;
+the probe/target can run and halt under OpenOCD without losing the link.
+The earlier Ozone protection warning is not confirmed by these readings.
+The reason for Ozone 3.26 connection loss is not yet proven.
+
+first-task-ozone-326-usb.jdebug is a USB project for Ozone 3.26,
+using the serial number displayed by the user's project wizard.
+It applies DBG_IWDG_STOP after connection/reset to rule out watchdog
+reset while debugging a halted CPU, and enables diagnostic logs.
+An Ozone connection retry is required to verify its behavior.

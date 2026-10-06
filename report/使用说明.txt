@@ -1,0 +1,31 @@
+实验报告文件
+
+PDF：冯远钦_32501056106_电控第1次作业实验报告.pdf
+用于查看、打印和提交。所有照片与截图集中在附录。
+
+HTML：冯远钦_32501056106_电控第1次作业实验报告.html
+可编辑的报告源文件。用文本编辑器修改，浏览器打开查看。
+图片引用 ../evidence 中的原始照片和截图；移动文件时请保留目录关系。
+
+build_report.py
+报告生成脚本，使用 Python 的 reportlab 和 Pillow。
+修改 PAGES 中的正文后运行脚本，即可重新生成 PDF 和 HTML。
+脚本默认使用 Windows Fonts 中的宋体、黑体与 Consolas。
+
+提交仍需完成
+1. 创建公开 GitHub 仓库并上传 first-task 的工程源码、配置和报告。
+2. 检查仓库链接可以访问，且包含 Tasks/src/tasks.c 和 first-task.ioc。
+3. 邮件主题：冯远钦_32501056106_电控第1次作业
+4. 收件人：13567781025@163.com
+5. 抄送：2077822372@qq.com
+6. 邮件正文写仓库链接，并附实验报告 PDF。
+7. 截止时间：2026年10月6日22:00（北京时间）。
+
+当前 Tasks/src/tasks.c 为不喂狗的看门狗阶段。
+使用发放 CMake 模板后，当前 ELF 输出为 build/first-task.elf。
+附录只保留图1点灯照片、图2定时器曲线和图3看门狗曲线，共三张图片。
+图2已替换为发放模板构建后补拍的完整Timeline截图；图3保留先前的原始看门狗曲线。
+补拍用固件为build/first-task-timer.elf，其归档为firmware/first-task-timer-course.elf。
+当前 build/first-task.elf 已重新烧录并校验通过，Ozone 3.26 已显示周期归零曲线。
+新旧固件与截图的对应关系见 firmware/stages.txt。
+定时器阶段恢复方式见 firmware/stages.txt。

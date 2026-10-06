@@ -1,0 +1,62 @@
+固件阶段记录（2026-10-06）
+
+定时器阶段：first-task-timer.elf
+TIM2 每 1 ms 更新一次，回调中 tick 自增并调用 HAL_IWDG_Refresh。
+此固件已在板上运行，Ozone 显示 tick 持续增长。
+截图：../evidence/timer-tick-timeline.png
+SHA256：7EC015295AF7FA508C7E13398D1B56B682C3B1C1FC316906FCD6483290CE46C1
+
+看门狗阶段已实测归档：first-task-watchdog.elf（模板替换前的构建）
+当前 Tasks/src/tasks.c 已将 HAL_IWDG_Refresh 调用注释。
+TIM2 中断和 tick 自增仍然保留，IWDG 配置仍然启用。
+原 build/Debug/first-task.elf 与本固件内容相同，已有截图对应这份实测固件。
+已通过 Debug 编译；回调反汇编保留自增操作，没有喂狗调用。
+Flash 使用 7164 / 32768 字节；RAM 使用 1672 / 10240 字节。
+SHA256：FE7D4B1D0E7CED375ADD3352AAE2717D8AD7789DD9ED645BCAFE9CD6A8836DD0
+用户提供的烧录输出显示 Verified OK，Programming exit code: 0。
+Ozone 3.26 的实测 Timeline 已显示 tick 反复增长并归零，峰值约 1900～2000。
+截图：../evidence/watchdog-tick-timeline.png（原始截图，未修改曲线）。
+完整运行状态截图：../evidence/watchdog-ozone-running.png，包含 CPU running 和 Connected @ 100 kHz。
+
+按发放模板重新构建：first-task-watchdog-course.elf
+根目录 CMakeLists.txt 已换为《纳新环境配置》附录对应发放模板，仅修改项目名为 first-task。
+user_folders 保持 Tasks；业务代码未修改。
+重新配置 Debug 与编译均成功，Flash 7164 / 32768 字节，RAM 1672 / 10240 字节。
+当前 ELF：../build/first-task.elf；HEX 和 BIN：../build/Debug/first-task.hex、first-task.bin。
+本归档与当前 ELF 一致。
+SHA256：9EFC0B3A8623AB43131A36937CC7D1EA15E58D0C7BE9301D3759F8F8E0276630
+新旧固件代码地址不同，本次已重新下载当前 ELF 后再用对应的 Ozone 工程调试。
+用户提供本次烧录截图：Verified OK，Programming exit code: 0。
+本次 Ozone 截图标题为 build/first-task.elf，状态为 CPU running、Connected @ 100 kHz。
+本次实测 tick 反复从接近0增长到约1900～2000后归零。
+烧录截图：../evidence/watchdog-course-flash-verified.png
+运行曲线截图：../evidence/watchdog-course-ozone-running.png
+以上原始截图均完整保存，未修改曲线。
+
+烧录脚本：../debug/flash-daplink-watchdog.cmd
+运行前关闭 Ozone 和其他 OpenOCD，并重插 DAPLink USB。
+蓝色开发板的 Micro-USB 保持供电。
+脚本会重新烧录固件、校验内容并启动 CPU。
+烧录结束后重新插拔 DAPLink USB，再单独打开 Ozone 3.26。
+Ozone 通过 File > Open 打开 ../debug/first-task-ozone-326-watchdog.jdebug。
+此工程自动加载 build/first-task.elf，并配置 DAPLink USB、SWD、100 kHz。
+使用 Debug > Start Debug Session > Attach to Running Program。
+观察看门狗曲线时，将 Timeline 的 Clear On Reset 改为 Clear Never。
+
+恢复定时器阶段源码：
+取消 Tasks/src/tasks.c 中 HAL_IWDG_Refresh 那一行的注释，再执行
+cmake --build --preset Debug。
+仅重新编译不会改变板上的固件；需重新下载对应的 ELF。
+
+定时器图2补拍固件（发放CMake模板）：first-task-timer-course.elf
+只临时启用HAL_IWDG_Refresh，编译并保存定时器固件后，源码和默认ELF已恢复看门狗阶段。
+补拍ELF：../build/first-task-timer.elf（与本归档相同）。
+SHA256：555A965E2EFA08DB1E8C7390E0AF54B4422756B63B1C6FEA2A81E4E1EC4CE64F
+已通过Debug编译，并检查回调包含HAL_IWDG_Refresh调用。
+用户已补拍本次固件运行的Timeline，标题为build/first-task-timer.elf。
+曲线在10 s附近约256 500，20 s附近约266 500，即约1000次/s，未出现周期归零。
+截图中程序运行，tick监视值为306443。原始截图保存为../evidence/timer-course-tick-timeline.png，未修改。
+该截图已替换报告图2；此前timer-tick-timeline.png保留作为原阶段记录。
+补拍烧录：../debug/flash-daplink-timer.cmd
+补拍调试：../debug/first-task-ozone-326-timer.jdebug
+补拍结束后，可运行../debug/flash-daplink-watchdog.cmd恢复看门狗固件。

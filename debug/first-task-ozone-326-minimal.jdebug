@@ -1,0 +1,11 @@
+// Minimal Ozone 3.26 attachment test. Run prepare-daplink-326.cmd first.
+void OnProjectLoad(void) {
+  Project.SetDevice("STM32F103C6");
+  Project.SetHostIF("USB", "1047408020");
+  Project.SetTargetIF("SWD");
+  Project.SetTIFSpeed("100 kHz");
+  Debug.SetConnectMode(CM_ATTACH_HALT);
+  Project.SetConsoleLogFile("$(ProjectDir)/first-task-ozone-326-minimal.log");
+  Project.SetJLinkLogFile("$(ProjectDir)/first-task-jlink-326-minimal.log");
+  File.Open("$(ProjectDir)/../firmware/first-task-timer.elf");
+}

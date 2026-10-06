@@ -1,0 +1,28 @@
+// Ozone 3.26: USB connection to the probe selected in the project wizard.
+void OnProjectLoad(void) {
+  Project.SetDevice("STM32F103C6");
+  Project.SetHostIF("USB", "1047408020");
+  Project.SetTargetIF("SWD");
+  Project.SetTIFSpeed("1 MHz");
+  Project.SetConsoleLogFile("$(ProjectDir)/first-task-ozone-326-usb.log");
+  Project.SetJLinkLogFile("$(ProjectDir)/first-task-jlink-326-usb.log");
+  File.Open("$(ProjectDir)/../firmware/first-task-timer.elf");
+}
+
+// DBG_IWDG_STOP only freezes IWDG while the CPU is halted by the debugger.
+// IWDG continues to run normally while the CPU runs.
+void FreezeWatchdogWhileHalted(void) {
+  U32 debugControl;
+  debugControl = Target.ReadU32(0xE0042004);
+  if (debugControl != 0xFFFFFFFF) {
+    Target.WriteU32(0xE0042004, debugControl | 0x00000100);
+  }
+}
+
+void AfterTargetConnect(void) {
+  FreezeWatchdogWhileHalted();
+}
+
+void AfterTargetReset(void) {
+  FreezeWatchdogWhileHalted();
+}

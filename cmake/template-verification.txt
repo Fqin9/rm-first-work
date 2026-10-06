@@ -1,0 +1,37 @@
+CMake 模板核对记录 2026年10月6日
+
+依据
+《纳新环境配置.pdf》附录第13至16页的 CMakeLists 模板。
+使用该 PDF 同目录的发放文件 CMakeLists.txt，以保留准确语法和格式。
+发放原文件已复制为 CMakeLists.course-original.txt。
+替换前的工程文件已备份为 CMakeLists.before-course-template.txt。
+
+替换结果
+当前工程 CMakeLists.txt 与发放原文件相比只改了一行：
+project(project C CXX ASM) 改为 project(first-task C CXX ASM)。
+user_folders 保持 "Tasks"。
+保留了模板的 C11、C++20、递归头文件/源文件搜集、drivers 库、HAL 宏、HEX/BIN 生成流程。
+保留模板针对新 CubeMX 的 system_stm32*.c 排除逻辑。
+
+构建验证
+cmake --fresh --preset Debug：退出码0，重新配置成功。
+cmake --build --preset Debug：退出码0，38项构建完成。
+CMAKE_BUILD_TYPE 为 Debug；Tasks/src/tasks.c 已进入编译，参数含 -O0 -g3。
+芯片宏为 STM32F103x6；回调只有一份；tick 地址为0x20000080。
+当前回调的反汇编包含 tick 自增，不含 HAL_IWDG_Refresh 调用。
+Flash 使用7164 / 32768字节，RAM 使用1672 / 10240字节。
+
+输出
+ELF：build/first-task.elf
+HEX：build/Debug/first-task.hex
+BIN：build/Debug/first-task.bin
+ELF SHA256：9EFC0B3A8623AB43131A36937CC7D1EA15E58D0C7BE9301D3759F8F8E0276630
+Debug配置文件仍位于build/Debug，运行输出目录采用发放模板的build目录。
+debug/first-task-ozone-326-watchdog.jdebug 和 flash-daplink-watchdog.cmd 已使用新 ELF 路径。
+
+硬件状态
+模板替换前的定时器和看门狗实测记录保留。
+本次新模板的 build/first-task.elf 已重新下载，用户截图显示 Verified OK、Programming exit code: 0。
+Ozone 3.26 加载 build/first-task.elf，实测 tick 反复增长到约1900～2000后归零。
+运行状态为 CPU running、Connected @ 100 kHz。
+证据：evidence/watchdog-course-flash-verified.png、evidence/watchdog-course-ozone-running.png。

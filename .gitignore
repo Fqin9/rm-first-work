@@ -1,0 +1,5 @@
+build/
+report/qa/
+debug/*.log
+*.user
+__pycache__/
